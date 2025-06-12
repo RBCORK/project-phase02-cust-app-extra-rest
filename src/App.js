@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getAll, post, put, deleteById } from './memdb.js';
+import { getAll, post, put, deleteById } from './restdb.js';
 import CustomerList from './CustomerList';
 import CustomerAddUpdateForm from './CustomerAddUpdateForm';
 import './App.css';
@@ -14,13 +14,8 @@ export function App() {
   const mode = formObject.id >= 0 ? 'Update' : 'Add';
 
   useEffect(() => {
-    getCustomers();
-  }, []);
-
-  const getCustomers = () => {
-    log('in getCustomers()');
-    setCustomers(getAll());
-  };
+  getAll(setCustomers);
+}, []);
 
   const handleListClick = (item) => {
     log('in handleListClick()');
@@ -36,16 +31,24 @@ export function App() {
     setFormObject(blankCustomer);
   };
 
-  const onDeleteClick = () => {
-    if (formObject.id >= 0) deleteById(formObject.id);
-    setFormObject(blankCustomer);
-  };
+  let onDeleteClick = function () {
+  if (formObject.id >= 0) {
+    deleteById(formObject.id).then(() => getAll(setCustomers));
+  }
+  setFormObject(blankCustomer);
+}
 
-  const onSaveClick = () => {
-    if (mode === 'Add') post(formObject);
-    if (mode === 'Update') put(formObject.id, formObject);
-    setFormObject(blankCustomer);
-  };
+
+  let onSaveClick = function () {
+  if (mode === 'Add') {
+    post(formObject).then(() => getAll(setCustomers));
+  }
+  if (mode === 'Update') {
+    put(formObject.id, formObject).then(() => getAll(setCustomers));
+  }
+  setFormObject(blankCustomer);
+}
+
 
   return (
     <div>
