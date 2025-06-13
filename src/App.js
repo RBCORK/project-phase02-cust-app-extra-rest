@@ -4,7 +4,9 @@ import CustomerList from './CustomerList';
 import CustomerAddUpdateForm from './CustomerAddUpdateForm';
 import './App.css';
 
-function log(message) { console.log(message); }
+function log(message) {
+  console.log(message);
+}
 
 export function App() {
   const blankCustomer = { id: -1, name: '', email: '', password: '' };
@@ -14,13 +16,15 @@ export function App() {
   const mode = formObject.id >= 0 ? 'Update' : 'Add';
 
   useEffect(() => {
-  getAll(setCustomers);
-}, []);
+    getAll(setCustomers);
+  }, []);
 
-  const handleListClick = (item) => {
-    log('in handleListClick()');
-    setFormObject(formObject.id === item.id ? blankCustomer : item);
-  };
+ const handleListClick = (item) => {
+  log('in handleListClick()');
+  setFormObject((prev) =>
+    prev.id === item.id ? blankCustomer : item
+  );
+};
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -31,24 +35,22 @@ export function App() {
     setFormObject(blankCustomer);
   };
 
-  let onDeleteClick = function () {
-  if (formObject.id >= 0) {
-    deleteById(formObject.id).then(() => getAll(setCustomers));
-  }
-  setFormObject(blankCustomer);
-}
+  const onDeleteClick = function () {
+    if (formObject.id >= 0) {
+      deleteById(formObject.id).then(() => getAll(setCustomers));
+    }
+    setFormObject(blankCustomer);
+  };
 
-
-  let onSaveClick = function () {
-  if (mode === 'Add') {
-    post(formObject).then(() => getAll(setCustomers));
-  }
-  if (mode === 'Update') {
-    put(formObject.id, formObject).then(() => getAll(setCustomers));
-  }
-  setFormObject(blankCustomer);
-}
-
+  const onSaveClick = function () {
+    if (mode === 'Add') {
+      const { id, ...newCustomer } = formObject; // 🚫 don't send id: -1
+      post(newCustomer).then(() => getAll(setCustomers));
+    } else {
+      put(formObject.id, formObject).then(() => getAll(setCustomers));
+    }
+    setFormObject(blankCustomer);
+  };
 
   return (
     <div>

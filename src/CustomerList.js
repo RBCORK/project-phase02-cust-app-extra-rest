@@ -21,7 +21,12 @@ function CustomerList({ customers, selectedCustomerId, onCustomerClick }) {
             >
               <td>{item.name}</td>
               <td>{item.email}</td>
-              <td>{item.password}</td>
+              <td>
+                {item.id === selectedCustomerId
+                  ? item.password
+                  : '•'.repeat(item.password.length)}
+              </td>
+
             </tr>
           ))}
         </tbody>
